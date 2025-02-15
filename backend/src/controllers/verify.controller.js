@@ -6,6 +6,8 @@ import { Student } from '../models/student.model.js';
 import dotenv from "dotenv";
 import User from '../models/user.model.js'; // ✅ Import the User model
 import jwt from "jsonwebtoken";
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { log } from 'console';
 
 dotenv.config();
 
@@ -24,13 +26,10 @@ const verifyStudent = async (req, res) => {
   try {
     console.log("Received student verification request.");
 
-    // Ensure user is logged in
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized. Please log in." });
-    }
 
-    const { collegeName } = req.body; // ✅ Only extracting `collegeName`
+    const { collegeName, userId } = req.body; // ✅ Only extracting `collegeName`
     
+
     if (!collegeName) {
       return res.status(400).json({ error: "College Name is required." });
     }
@@ -39,10 +38,19 @@ const verifyStudent = async (req, res) => {
       return res.status(400).json({ error: "College ID Proof is required." });
     }
 
-    console.log("Form Data Received:", req.body);
-    console.log("Uploaded Files:", req.files);
+    const collegeIdProof = req.file
+    
+    console.log("ye");
+    
 
-    const collegeIdPath = req.files.studentId[0].path;
+    const result = await uploadOnCloudinary(collegeIdProof)
+    
+    console.log(result.secure_url)
+
+    console.log("Form Data Received:", req.body);
+    console.log("Uploaded Files:", req.file);
+
+    
 
     // Upload student ID to Cloudinary
     const uploadResponse = await cloudinary.uploader.upload(collegeIdPath, { folder: 'student_ids' });
