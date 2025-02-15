@@ -5,11 +5,22 @@ import LoginPage from "./pages/LoginPage";
 import StuVer from "./pages/StuVer";
 import LandlordVer from "./pages/LandLordVer" // ✅ Import modal
 import Filter from "./pages/Filter";
-import SignupPage from "./pages/SignupPage";
+import PropertyDetails from "./components/PropertyMapDetails";
+import AccountSettings from "./components/AccountSettings";
 
 
 function App() {
-  
+  const sampleProperty = {
+    name: "Sunshine PG",
+    address: "123 MG Road, Bangalore, Karnataka",
+    location: {
+      latitude: 12.9716,  // Bangalore Latitude
+      longitude: 77.5946, // Bangalore Longitude
+    },
+    rent: 15000,
+    amenities: ["WiFi", "AC", "24/7 Water", "Gym"],
+    photos: ["https://via.placeholder.com/300"], // Dummy Image URL
+  };
 
   return (
     <Router>
@@ -30,7 +41,7 @@ function App() {
           }
         />
         {/* Redirect unknown routes to Signup */}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/" />} /> 
       </Routes>
 
       {/* Landlord Verification Modal (Only renders if role is Landlord) */}
