@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Mail, User, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../lib/axios";
+import axios from "axios"
 
 const SignupPage = () => {
     const [formData, setFormData] = useState({
@@ -31,6 +32,7 @@ const SignupPage = () => {
         try {
             const response = await axios.post("http://localhost:5000/api/auth/signup", formData);
             alert("Signup successful! Redirecting to login...");
+            console.log(response)
             navigate("/login");
         } catch (error) {
             console.error("Error signing up:", error);

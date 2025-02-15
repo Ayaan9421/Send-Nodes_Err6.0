@@ -2,7 +2,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-const uploadDirectory = "./uploads";
+const uploadDirectory = "./public/temp";
 
 // Ensure upload directory exists
 if (!fs.existsSync(uploadDirectory)) {

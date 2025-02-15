@@ -1,136 +1,90 @@
-import React, { useState } from "react";
-import axios from "axios";
-import "./StuVer.css";
+import React, { useState } from 'react';
 
-const StuVer = () => {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [institution, setInstitution] = useState("");
-  const [school, setSchool] = useState("");
-  const [fieldOfStudy, setFieldOfStudy] = useState("");
-  const [graduationMonth, setGraduationMonth] = useState("");
-  const [graduationYear, setGraduationYear] = useState("");
-  const [agreement, setAgreement] = useState(null);
-  const [eligibility, setEligibility] = useState(null);
-  const [feeReceipt, setFeeReceipt] = useState(null);
-  const [studentId, setStudentId] = useState(null);
-  const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState("");
+const StudentVerificationForm = ({ userId }) => {
+  const [collegeName, setCollegeName] = useState('');
+  const [collegeIdProof, setCollegeIdProof] = useState(null);
+  const [message, setMessage] = useState('');
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setCollegeIdProof(selectedFile);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let newErrors = {};
-  
-    if (!school) newErrors.school = "College name is required.";
-    if (!studentId) newErrors.studentId = "Upload your student ID.";
-  
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-  
+
+    // Create a FormData object
     const formData = new FormData();
-    formData.append("collegeName", school);
-    formData.append("studentId", studentId); // Uploading only studentId
-  
+    formData.append('collegeName', collegeName); // Append string data
+    formData.append('collegeIdProof', collegeIdProof); // Append file data
+    formData.append('userId', userId); // Append userId as a foreign key
+
     try {
-      const token = localStorage.getItem("token"); // ✅ Retrieve JWT token
-  
-      const response = await axios.post("http://localhost:5000/api/verify/student", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`, // ✅ Send token for authentication
-        },
+      // Send the FormData to the backend
+      const response = await fetch('http://localhost:5000/api/verify/student', {
+        method: 'POST',
+        body: formData, // No need to set Content-Type header manually
       });
-  
-      console.log("Server Response:", response.data);
-      setMessage(response.data.message);
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage('Student verification submitted successfully!');
+      } else {
+        setMessage(data.message || 'Failed to submit verification.');
+      }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      setMessage(error.response?.data?.error || "Error submitting form.");
+      setMessage('An error occurred. Please try again.');
+      console.error('Error:', error);
     }
   };
-  
 
   return (
-    <div className="form-container">
-      <h1>STUDENT VERIFICATION DETAILS</h1>
-      {message && <p className="success-message">{message}</p>}
-      
-      <form onSubmit={handleSubmit}>
-        <label>What type of institution do you attend?</label>
-        <select value={institution} onChange={(e) => setInstitution(e.target.value)}>
-          <option value="">Select type of institution</option>
-          <option value="Undergraduate">Undergraduate</option>
-          <option value="Postgraduate">Postgraduate</option>
-          <option value="Junior College">Junior College</option>
-        </select>
-        {errors.institution && <p className="error-message">{errors.institution}</p>}
-
-        <label>What is your college's name?</label>
-        <input type="text" value={school} onChange={(e) => setSchool(e.target.value)} placeholder="Enter your college name" />
-        {errors.school && <p className="error-message">{errors.school}</p>}
-
-        <label>What is your primary field of study?</label>
-        <input type="text" value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)} placeholder="Enter your field of study" />
-        {errors.fieldOfStudy && <p className="error-message">{errors.fieldOfStudy}</p>}
-
-        <label>Expected graduation date:</label>
-        <div className="graduation-date">
-          <select value={graduationMonth} onChange={(e) => setGraduationMonth(e.target.value)}>
-            <option value="">Month</option>
-            {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((month) => (
-              <option key={month} value={month}>{month}</option>
-            ))}
-          </select>
-          <select value={graduationYear} onChange={(e) => setGraduationYear(e.target.value)}>
-            <option value="">Year</option>
-            {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i).map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
+    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+        Student Verification Form
+      </h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="collegeName" className="block text-sm font-medium text-gray-700">
+            College Name:
+          </label>
+          <input
+            type="text"
+            id="collegeName"
+            value={collegeName}
+            onChange={(e) => setCollegeName(e.target.value)}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
         </div>
-
-        <label>Upload fee receipt:</label>
-        <input type="file" onChange={(e) => setFeeReceipt(e.target.files[0])} />
-        {errors.feeReceipt && <p className="error-message">{errors.feeReceipt}</p>}
-
-        <label>Upload student ID:</label>
-        <input type="file" onChange={(e) => setStudentId(e.target.files[0])} />
-        {errors.studentId && <p className="error-message">{errors.studentId}</p>}
-
-        <p>By submitting this form, I agree to the <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>.</p>
-
-        <div className="radio-group">
-          <label>
-            <input type="radio" name="agreement" value="agree" checked={agreement === "agree"} onChange={() => setAgreement("agree")} />
-            Yes, I agree
+        <div>
+          <label htmlFor="collegeIdProof" className="block text-sm font-medium text-gray-700">
+            College ID Proof (PDF/Image):
           </label>
-          <label>
-            <input type="radio" name="agreement" value="disagree" checked={agreement === "disagree"} onChange={() => setAgreement("disagree")} />
-            No, I do not agree
-          </label>
+          <input
+            type="file"
+            id="collegeIdProof"
+            onChange={handleFileChange}
+            accept=".pdf,.jpg,.jpeg,.png"
+            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            required
+          />
         </div>
-        {errors.agreement && <p className="error-message">{errors.agreement}</p>}
-
-        <p>I confirm that I am a student enrolled at the institution I provided.</p>
-
-        <div className="radio-group">
-          <label>
-            <input type="radio" name="eligibility" value="agree" checked={eligibility === "agree"} onChange={() => setEligibility("agree")} />
-            Yes, I agree
-          </label>
-          <label>
-            <input type="radio" name="eligibility" value="disagree" checked={eligibility === "disagree"} onChange={() => setEligibility("disagree")} />
-            No, I do not agree
-          </label>
-        </div>
-        {errors.eligibility && <p className="error-message">{errors.eligibility}</p>}
-
-        <button type="submit" className="submit-btn" disabled={!agreement || !eligibility}>Submit</button>
+        <button
+          type="submit"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Submit
+        </button>
       </form>
+      {message && (
+        <p className={`mt-4 text-sm text-center ${message.includes('success') ? 'text-green-600' : 'text-red-600'}`}>
+          {message}
+        </p>
+      )}
     </div>
   );
 };
 
-export default StuVer;
+export default StudentVerificationForm;

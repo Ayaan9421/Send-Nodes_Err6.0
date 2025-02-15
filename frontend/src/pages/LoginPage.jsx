@@ -36,7 +36,7 @@ const LoginPage = () => {
       alert("Login successful!");
   
       if (role === "Student") {
-        navigate("/verify-student");
+        navigate("/login/student-ver");
       } else if (role === "Landlord" && !verified) {
         navigate("/verify-landlord"); // ✅ Redirects to a route that opens the modal
       } else {
@@ -126,7 +126,7 @@ const LoginPage = () => {
           <div className="text-center">
             <p className="text-base-content/60">
               Don&apos;t have an account?{" "}
-              <Link to="/signup" className="link link-primary">
+              <Link to="/" className="link link-primary">
                 Create account
               </Link>
             </p>
