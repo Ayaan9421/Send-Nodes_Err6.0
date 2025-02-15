@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
-import { Link, useNavigate } from 'react-router-dom';
-import { axiosInstance } from '../lib/axios';
+import React, { useState } from "react";
+import { Eye, EyeOff, Lock, Mail, MessageSquare } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    username: "",
+    password: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -18,17 +20,29 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMessage("");
+  
     try {
-      await axiosInstance.post('/auth/login', formData);
-      alert('Login successful!');
-      navigate('/create');
+      const response = await axios.post("http://localhost:5000/api/auth/login", formData);
+  
+      // Store token in localStorage
+      localStorage.setItem("token", response.data.token);
+  
+      alert("Login successful!");
+  
+      // Redirect based on role
+      navigate("/redirect");
     } catch (error) {
-      console.error('Error logging in:', error);
-      alert(error.response.data.error);
+      console.error("Error logging in:", error);
+      setErrorMessage(error.response?.data?.message || "Login failed. Please try again.");
     } finally {
-      setFormData({ email: '', password: '' });
+      setLoading(false);
+      setFormData({ username: "", password: "" });
     }
-  }
+  };
+  
+
   return (
     <div className="h-screen grid lg:grid-cols-2">
       {/* Left Side - Form */}
@@ -37,10 +51,7 @@ const LoginPage = () => {
           {/* Logo */}
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-2 group">
-              <div
-                className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20
-            transition-colors"
-              >
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                 <MessageSquare className="w-6 h-6 text-primary" />
               </div>
               <h1 className="text-2xl font-bold mt-2">Welcome Back</h1>
@@ -48,23 +59,26 @@ const LoginPage = () => {
             </div>
           </div>
 
+          {/* Error Message */}
+          {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Email</span>
+                <span className="label-text font-medium">Username</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-base-content/40" />
                 </div>
                 <input
-                  type="email"
-                  name="email"
-                  className={`input input-bordered w-full pl-10`}
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  type="text"
+                  name="username"
+                  className="input input-bordered w-full pl-10"
+                  placeholder="yourusername"
+                  value={formData.username}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -81,10 +95,10 @@ const LoginPage = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  className={`input input-bordered w-full pl-10`}
+                  className="input input-bordered w-full pl-10"
                   placeholder="••••••••"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={handleChange}
                   required
                 />
                 <button
@@ -92,19 +106,13 @@ const LoginPage = () => {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-base-content/40" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-base-content/40" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5 text-base-content/40" /> : <Eye className="h-5 w-5 text-base-content/40" />}
                 </button>
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full" >
-
-              "Sign in"
-
+            <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
@@ -118,9 +126,8 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-
-
     </div>
-  )
+  );
 };
+
 export default LoginPage;

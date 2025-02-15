@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "./StuVer.css";
 
 const StuVer = () => {
@@ -14,43 +15,49 @@ const StuVer = () => {
   const [feeReceipt, setFeeReceipt] = useState(null);
   const [studentId, setStudentId] = useState(null);
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let newErrors = {};
-
-    if (!fullName) newErrors.fullName = "Full name is required.";
-    if (!email) newErrors.email = "Email address is required.";
-    if (!institution) newErrors.institution = "Institution type must be selected.";
-    if (!school) newErrors.school = "Please select your college.";
-    if (!fieldOfStudy) newErrors.fieldOfStudy = "Field of study must be selected.";
-    if (!graduationMonth) newErrors.graduationMonth = "Select graduation month.";
-    if (!graduationYear) newErrors.graduationYear = "Select graduation year.";
-    if (!feeReceipt) newErrors.feeReceipt = "Upload your fee receipt.";
+  
+    if (!school) newErrors.school = "College name is required.";
     if (!studentId) newErrors.studentId = "Upload your student ID.";
-    if (!agreement) newErrors.agreement = "You must select an agreement option.";
-    if (!eligibility) newErrors.eligibility = "You must confirm your student status.";
-
+  
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-    } else {
-      setErrors({});
-      alert("Form submitted successfully!");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("collegeName", school);
+    formData.append("studentId", studentId); // Uploading only studentId
+  
+    try {
+      const token = localStorage.getItem("token"); // ✅ Retrieve JWT token
+  
+      const response = await axios.post("http://localhost:5000/api/verify/student", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // ✅ Send token for authentication
+        },
+      });
+  
+      console.log("Server Response:", response.data);
+      setMessage(response.data.message);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setMessage(error.response?.data?.error || "Error submitting form.");
     }
   };
+  
 
   return (
     <div className="form-container">
       <h1>STUDENT VERIFICATION DETAILS</h1>
+      {message && <p className="success-message">{message}</p>}
+      
       <form onSubmit={handleSubmit}>
-        <label>Enter your full name:</label>
-        <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Enter your full name" />
-        {errors.fullName && <p className="error-message">{errors.fullName}</p>}
-
-        <label>Enter your student email address:</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your student email" />
-        {errors.email && <p className="error-message">{errors.email}</p>}
-
         <label>What type of institution do you attend?</label>
         <select value={institution} onChange={(e) => setInstitution(e.target.value)}>
           <option value="">Select type of institution</option>
@@ -92,9 +99,7 @@ const StuVer = () => {
         <input type="file" onChange={(e) => setStudentId(e.target.files[0])} />
         {errors.studentId && <p className="error-message">{errors.studentId}</p>}
 
-        <p>
-          By submitting this form, I agree to the <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>.
-        </p>
+        <p>By submitting this form, I agree to the <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>.</p>
 
         <div className="radio-group">
           <label>
@@ -108,9 +113,7 @@ const StuVer = () => {
         </div>
         {errors.agreement && <p className="error-message">{errors.agreement}</p>}
 
-        <p>
-          I confirm that I am a student enrolled at the institution I provided.
-        </p>
+        <p>I confirm that I am a student enrolled at the institution I provided.</p>
 
         <div className="radio-group">
           <label>
@@ -123,7 +126,6 @@ const StuVer = () => {
           </label>
         </div>
         {errors.eligibility && <p className="error-message">{errors.eligibility}</p>}
-
 
         <button type="submit" className="submit-btn" disabled={!agreement || !eligibility}>Submit</button>
       </form>
