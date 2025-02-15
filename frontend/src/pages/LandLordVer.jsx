@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import "./LandlordVer.css";
+import "./LandLordVer.css";
 
 const LandlordVer = () => {
   const [formData, setFormData] = useState({
