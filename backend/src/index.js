@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.route.js";
 import propertyRoutes from "./routes/property.route.js";
 import rentalAgreementRoutes from "./routes/rentalAgreement.route.js";
 import reviewRoutes from "./routes/review.route.js";
+import verifyRoutes from "./routes/verify.route.js"
 
 
 dotenv.config();
@@ -35,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/rentalAgreement", rentalAgreementRoutes);
 app.use("/api/review", reviewRoutes);
+app.use("/api/verify", verifyRoutes);
 
 
 // Socket.io (for chat feature)
