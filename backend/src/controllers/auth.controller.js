@@ -1,136 +1,82 @@
-import { generateToken } from "../utils/utils.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
-import bcrypt from "bcryptjs";
-import cloudinary from "../utils/cloudinary.js";
-import passport from "passport";
-import { Strategy as TwitterStrategy } from "passport-twitter";
+import dotenv from 'dotenv'
 
-export const signup = async (req, res) => {
-  const { email, fullName, password } = req.body;
+dotenv.config();
+// Environment variables for JWT
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1h";
+
+// Signup (User Registration)
+const signup = async (req, res) => {
   try {
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ message: "All field are required" });
-    }
-    if (password.length < 6) {
-      return res
-        .status(400)
-        .json({ message: "Password must be atleast 6 characters" });
-    }
-    const user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const { username, password, email, fullName, role, gender, dateOfBirth } = req.body;
 
+    // Check if user already exists
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds: 10
+
+    // Create a new user
     const newUser = new User({
-      fullName,
-      email,
+      username,
       password: hashedPassword,
+      email,
+      fullName,
+      role,
+      gender,
+      dateOfBirth,
     });
 
-    if (newUser) {
-      generateToken(newUser._id, res);
-      await newUser.save();
-      res.status(201).json({
-        _id: newUser._id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        profilePic: newUser.profilePic,
-      });
-    } else {
-      res.status(400).json({ message: "Invalid user data" });
-    }
+    // Save the user to the database
+    await newUser.save();
+
+    // Generate JWT token
+    const token = jwt.sign({ userId: newUser._id, role: newUser.role }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
+
+    // Respond with success and token
+    res.status(201).json({ message: "User created successfully", token });
   } catch (error) {
-    console.log("Error in signup ", error.message);
-    res.status(500).json({ message: "Internal Server error" });
+    console.error("Error during signup:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const login = async (req, res) => {
-  const { email, password } = req.body;
+// Login (User Authentication)
+const login = async (req, res) => {
   try {
-    const user = await User.findOne({ email });
+    const { username, password } = req.body;
+
+    // Find the user by username
+    const user = await User.findOne({ username }).select("+password"); // Include password in query
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid username or password" });
     }
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
+
+    // Compare the provided password with the hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid username or password" });
     }
-    generateToken(user._id, res);
-    res.status(200).json({
-      _id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      profilePic: user.profilePic,
+
+    // Generate JWT token
+    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
     });
+
+    // Respond with success and token
+    res.status(200).json({ message: "Login successful", token });
   } catch (error) {
-    console.log("Error in login controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const logout = async (req, res) => {
-  try {
-    res.cookie("jwt", "", { maxAge: 0 });
-    res.status(200).json({ message: "Logged out succesfully" });
-  } catch (error) {
-    console.log("Error in logout controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
-
-export const checkAuth = async (req, res) => {
-  try {
-    res.status(200).json(req.user);
-  } catch (error) {
-    console.log("Error in checkAuth", error.message);
-    res.status(500).json({ message: "Internal Server error" });
-  }
-};
-
-
-passport.use(
-  new TwitterStrategy(
-    {
-      consumerKey: process.env.TWITTER_CONSUMER_KEY,
-      consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-      callbackURL: process.env.TWITTER_CALLBACK_URL,
-    },
-    async (token, tokenSecret, profile, done) => {
-      try {
-        let user = await User.findOne({ twitterId: profile.id });
-        if (!user) {
-          user = await User.create({
-            twitterId: profile.id,
-            twitterUsername: profile.username,
-            twitterToken: token,
-            twitterTokenSecret: tokenSecret,
-          });
-        }
-        return done(null, user);
-      } catch (err) {
-        return done(err, null);
-      }
-    }
-  )
-);
-
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id);
-  done(null, user);
-});
-
-export const twitterLogin = passport.authenticate("twitter");
-
-export const twitterCallback = passport.authenticate("twitter", {
-  failureRedirect: "/login",
-  session: false,
-});
-
-export const twitterSuccess = (req, res) => {
-  res.status(200).json({ message: "Twitter login successful", user: req.user });
-};
+export { signup, login };
