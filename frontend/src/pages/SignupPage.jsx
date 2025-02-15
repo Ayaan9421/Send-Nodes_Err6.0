@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Mail, User, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../lib/axios";
 
 const SignupPage = () => {
     const [formData, setFormData] = useState({

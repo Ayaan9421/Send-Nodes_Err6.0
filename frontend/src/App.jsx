@@ -1,35 +1,15 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, createBrowserRouter } from "react-router-dom";
 import { useState, useEffect } from "react";
 import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
 import StuVer from "./pages/StuVer";
 import LandlordVer from "./pages/LandLordVer" // ✅ Import modal
+import Filter from "./pages/Filter";
+import SignupPage from "./pages/SignupPage";
+
 
 function App() {
-  const [userRole, setUserRole] = useState(null);
-  const [isLandlordModalOpen, setIsLandlordModalOpen] = useState(false);
-
-  useEffect(() => {
-    const getUserRole = () => {
-      const token = localStorage.getItem("token");
-      if (!token) return null;
-
-      try {
-        const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decode JWT
-        return decodedToken.role;
-      } catch (error) {
-        return null;
-      }
-    };
-
-    const role = getUserRole();
-    setUserRole(role);
-
-    // Open the landlord modal automatically if role is "Landlord"
-    if (role === "Landlord") {
-      setIsLandlordModalOpen(true);
-    }
-  }, []);
+  
 
   return (
     <Router>

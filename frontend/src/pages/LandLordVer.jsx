@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./LandlordVer.css";
+import "./LandLordVer.css";
 
 const LandlordVer = ({ onClose }) => {
   const [governmentId, setGovernmentId] = useState(null);
