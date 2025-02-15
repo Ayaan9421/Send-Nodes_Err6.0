@@ -5,6 +5,7 @@ import { Landlord } from '../models/landlord.model.js';
 import { Student } from '../models/student.model.js';
 import dotenv from "dotenv";
 import User from '../models/user.model.js'; // ✅ Import the User model
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
@@ -111,5 +112,27 @@ const verifyLandlord = async (req, res) => {
     res.status(500).json({ error: 'Failed to verify landlord' });
   }
 };
+
+export const checkLandlordVerification = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    // Decode token to get userId
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const landlord = await Landlord.findOne({ userId: decoded.userId });
+
+    if (!landlord) {
+      return res.status(404).json({ error: "Landlord not found" });
+    }
+
+    res.status(200).json({ verified: landlord.verified });
+  } catch (error) {
+    console.error("Error checking landlord verification:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 
 export { verifyLandlord, verifyStudent };

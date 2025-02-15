@@ -26,23 +26,30 @@ const LoginPage = () => {
     try {
       const response = await axios.post("http://localhost:5000/api/auth/login", formData);
   
-      // Store token in localStorage
-      localStorage.setItem("token", response.data.token);
+      const { token, role, verified } = response.data;
+  
+      // Store token & verification status in localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+      localStorage.setItem("verified", verified); // ✅ Store verification status
   
       alert("Login successful!");
   
-      // Redirect based on role
-      navigate("/redirect");
+      if (role === "Student") {
+        navigate("/verify-student");
+      } else if (role === "Landlord" && !verified) {
+        navigate("/verify-landlord"); // ✅ Redirects to a route that opens the modal
+      } else {
+        navigate("/dashboard"); // ✅ If already verified, go to dashboard
+      }
     } catch (error) {
       console.error("Error logging in:", error);
       setErrorMessage(error.response?.data?.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
-      setFormData({ username: "", password: "" });
     }
   };
   
-
   return (
     <div className="h-screen grid lg:grid-cols-2">
       {/* Left Side - Form */}
