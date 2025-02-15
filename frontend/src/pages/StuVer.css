@@ -1,50 +1,101 @@
 .form-container {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 40px auto;
     padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
   }
   
-  .bold-heading {
-    font-size: 24px;
-    font-weight: bold;
+  h1 {
     text-align: center;
+    font-size: 24px;
     margin-bottom: 20px;
   }
   
   label {
     font-weight: bold;
+    margin-top: 10px;
     display: block;
-    margin: 10px 0 5px;
   }
   
-  input, select {
+  input,
+  select {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
+    padding: 10px;
+    margin-top: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  input[type="file"] {
+    padding: 5px;
+  }
+  
+  .graduation-date {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .graduation-date select {
+    flex: 1;
+  }
+  
+  .radio-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  
+  .radio-group label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
   }
   
   .error-message {
     color: red;
     font-size: 12px;
+    margin-top: 5px;
   }
   
-  .submit-btn {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
+  .info-box {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
   }
   
-  .submit-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  @media (max-width: 600px) {
+    .form-container {
+      width: 90%;
+      padding: 15px;
+    }
+  
+    .graduation-date {
+      flex-direction: column;
+    }
   }
   
