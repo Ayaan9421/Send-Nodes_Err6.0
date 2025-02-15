@@ -1,0 +1,90 @@
+/* PropVer.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0 80px;
+  }
+  
+  .form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .form-container:hover {
+    transform: scale(1.02);
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .form-group-half {
+    flex: 1;
+  }
+  
+  label {
+    font-weight: normal;
+    display: block;
+    margin-bottom: 6px;
+    color: #444;
+    font-size: 14px;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border 0.3s;
+  }
+  
+  input:focus, select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  }
+  
+  .submit-btn {
+    width: 100%;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  
+  .submit-btn:hover {
+    background: linear-gradient(45deg, #0056b3, #004099);
+  }
+  
