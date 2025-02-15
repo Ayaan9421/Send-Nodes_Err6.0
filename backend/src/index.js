@@ -15,6 +15,13 @@ const io = new Server(server, {
     cors: { origin: "*" }
 });
 
+// Starting url
+app.get('/', (req, res)=>{
+    res.json({
+        message: "Yayyy",
+    })
+})
+
 // Middleware
 app.use(express.json());
 app.use(cors());

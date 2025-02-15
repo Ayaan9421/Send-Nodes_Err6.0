@@ -1,6 +1,6 @@
 import express from "express";
 import { verifyToken } from "../middlewares/auth.middleware.js";
-import { createAgreement, getAgreements } from "../controllers/rentalAgreement.controller.js";
+import { createAgreement, getAgreements } from "./rentalAgreement.controller.js";
 
 const router = express.Router();
 
