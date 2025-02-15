@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
+import StuVer from "./pages/StuVer";
+import LandLordVer from "./pages/LandLordVer"
+import PropVer from "./pages/PropVer";
 
 function App() {
   const AppContent = () => {
@@ -9,9 +12,9 @@ function App() {
     const noNavbarRoutes = ["/", "/login"];
 
     return (
-      <div className="App p-2 bg-slate-900">
-        <Navbar/>
-        <Home/>
+      <div>
+        
+        <StuVer/>
       </div>
     );
   };
