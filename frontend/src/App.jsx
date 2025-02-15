@@ -11,6 +11,7 @@ function App() {
     return (
       <div className="App p-2 bg-slate-900">
         <Navbar/>
+        <Home/>
       </div>
     );
   };
