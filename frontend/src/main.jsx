@@ -9,6 +9,7 @@ import Filter from './pages/Filter.jsx'
 import LandlordVer from './pages/LandLordVer.jsx'
 import StuVer from './pages/StuVer.jsx'
 import SignupPage from './pages/SignupPage.jsx'
+import AccountSettings from './pages/AccountSettings.jsx'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -21,6 +22,7 @@ const router = createBrowserRouter(
           {/* <Route path="landlord/addproperty" element={<AddProperty />} /> */}
           <Route path="login/student-ver" element={<StuVer />} />
           <Route path="student/searchproperty" element={<Filter />} />
+          <Route path="user/profile" element={<AccountSettings/>}/>
       </Route>
     )
   )

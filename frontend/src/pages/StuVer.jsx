@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const StudentVerificationForm = ({ userId }) => {
   const [collegeName, setCollegeName] = useState('');
   const [collegeIdProof, setCollegeIdProof] = useState(null);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate()
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -27,7 +29,7 @@ const StudentVerificationForm = ({ userId }) => {
       });
 
       const data = await response.json();
-
+      navigate('/student/searchproperty')
       if (response.ok) {
         setMessage('Student verification submitted successfully!');
       } else {

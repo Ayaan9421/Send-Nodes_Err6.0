@@ -28,19 +28,18 @@ const LoginPage = () => {
   
       const { token, role, verified } = response.data;
   
-      // Store token & verification status in localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
-      localStorage.setItem("verified", verified); // ✅ Store verification status
+      localStorage.setItem("verified", verified);
   
       alert("Login successful!");
   
       if (role === "Student") {
         navigate("/login/student-ver");
       } else if (role === "Landlord" && !verified) {
-        navigate("/verify-landlord"); // ✅ Redirects to a route that opens the modal
+        navigate("/verify-landlord");
       } else {
-        navigate("/dashboard"); // ✅ If already verified, go to dashboard
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Error logging in:", error);
@@ -51,86 +50,73 @@ const LoginPage = () => {
   };
   
   return (
-    <div className="h-screen grid lg:grid-cols-2">
-      {/* Left Side - Form */}
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="w-6 h-6 text-primary" />
+    <div className="h-screen flex justify-center items-center bg-gray-100">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <div className="text-center mb-6">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+              <MessageSquare className="w-6 h-6 text-blue-600" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800">Welcome Back</h1>
+            <p className="text-gray-500">Sign in to your account</p>
+          </div>
+        </div>
+
+        {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-gray-700 font-medium">Username</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-3 flex items-center">
+                <Mail className="h-5 w-5 text-gray-400" />
               </div>
-              <h1 className="text-2xl font-bold mt-2">Welcome Back</h1>
-              <p className="text-base-content/60">Sign in to your account</p>
+              <input
+                type="text"
+                name="username"
+                className="w-full pl-10 p-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="yourusername"
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
 
-          {/* Error Message */}
-          {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Username</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-base-content/40" />
-                </div>
-                <input
-                  type="text"
-                  name="username"
-                  className="input input-bordered w-full pl-10"
-                  placeholder="yourusername"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                />
+          <div>
+            <label className="block text-gray-700 font-medium">Password</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-3 flex items-center">
+                <Lock className="h-5 w-5 text-gray-400" />
               </div>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="w-full pl-10 p-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 flex items-center"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+              </button>
             </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Password</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-base-content/40" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  className="input input-bordered w-full pl-10"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5 text-base-content/40" /> : <Eye className="h-5 w-5 text-base-content/40" />}
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
-
-          <div className="text-center">
-            <p className="text-base-content/60">
-              Don&apos;t have an account?{" "}
-              <Link to="/" className="link link-primary">
-                Create account
-              </Link>
-            </p>
           </div>
+
+          <button type="submit" className="w-full p-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300" disabled={loading}>
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+
+        <div className="text-center mt-4">
+          <p className="text-gray-500">
+            Don&apos;t have an account? <Link to="/" className="text-blue-600 hover:underline">Create account</Link>
+          </p>
         </div>
       </div>
     </div>
