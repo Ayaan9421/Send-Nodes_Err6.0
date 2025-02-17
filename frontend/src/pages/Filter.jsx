@@ -5,6 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "./Filter.css";
+import { Link } from "react-router-dom";
 
 const Filter = () => {
   const [sortBy, setSortBy] = useState("lowest");
@@ -17,39 +18,39 @@ const Filter = () => {
   });
 
   const listings = [
-    { name: "Vaishali Varadkar", location: "Goregaon East, Mumbai 400065", rent: 11000, 
+    { id: 1, name: "Vaishali Varadkar", location: "Goregaon East, Mumbai 400065", rent: 11000, 
       images: ["/images/pg1-1.jpg", "/images/pg1-2.jpg", "/images/pg1-3.jpg"], gender: "Ladies", 
       availability: "Available Now", capacity: "Single" },
   
-    { name: "K K Housing PG", location: "Santacruz East, Mumbai 400055", rent: 12500, 
+    { id: 2, name: "K K Housing PG", location: "Santacruz East, Mumbai 400055", rent: 12500, 
       images: ["/images/pg 2-1.jpg", "/images/pg 2-2.jpg", "/images/pg 2-3.jpg"], gender: "Unisex", 
       availability: "Fully Occupied", capacity: "Double" },
   
-    { name: "Sunrise PG", location: "Andheri West, Mumbai 400058", rent: 9000, 
+    { id: 3, name: "Sunrise PG", location: "Andheri West, Mumbai 400058", rent: 9000, 
       images: ["/images/pg 3-1.jpg", "/images/pg 3-2.jpg", "/images/pg 3-3.jpg"], gender: "Gents", 
       availability: "Available Now", capacity: "Triple" },
   
-    { name: "Metro City PG", location: "Bandra East, Mumbai 400051", rent: 15000, 
+    { id: 4, name: "Metro City PG", location: "Bandra East, Mumbai 400051", rent: 15000, 
       images: ["/images/pg 4-1.jpg", "/images/pg 4-2.jpg", "/images/pg 4-3.jpg"], gender: "Ladies", 
       availability: "Available Now", capacity: "Single" },
   
-    { name: "Comfort Stay PG", location: "Powai, Mumbai 400076", rent: 8000, 
+    { id: 5, name: "Comfort Stay PG", location: "Powai, Mumbai 400076", rent: 8000, 
       images: ["/images/pg 5-1.jpg", "/images/pg 5-2.jpg", "/images/pg 5-3.jpg"], gender: "Unisex", 
       availability: "Fully Occupied", capacity: "Double" },
   
-    { name: "Skyline PG", location: "Thane West, Mumbai 400601", rent: 9500, 
+    { id: 6, name: "Skyline PG", location: "Thane West, Mumbai 400601", rent: 9500, 
       images: ["/images/pg6-1.jpg", "/images/pg6-2.jpg", "/images/pg6-3.jpg"], gender: "Gents", 
       availability: "Available Now", capacity: "Triple" },
   
-    { name: "Elite Living PG", location: "Vile Parle, Mumbai 400047", rent: 18000, 
+    { id: 7, name: "Elite Living PG", location: "Vile Parle, Mumbai 400047", rent: 18000, 
       images: ["/images/pg1-1.jpg", "/images/pg1-2.jpg", "/images/pg1-3.jpg"], gender: "Ladies", 
       availability: "Available Now", capacity: "Single" },
   
-    { name: "Green Haven PG", location: "Malad West, Mumbai 400064", rent: 7500, 
+    { id: 8, name: "Green Haven PG", location: "Malad West, Mumbai 400064", rent: 7500, 
       images: ["/images/pg 2-1.jpg", "/images/pg 2-2.jpg", "/images/pg 2-3.jpg"], gender: "Unisex", 
       availability: "Fully Occupied", capacity: "Double" },
   
-    { name: "City Comfort PG", location: "Kurla, Mumbai 400070", rent: 10500, 
+    { id: 9, name: "City Comfort PG", location: "Kurla, Mumbai 400070", rent: 10500, 
       images: ["/images/pg 3-1.jpg", "/images/pg 3-2.jpg", "/images/pg 3-3.jpg"], gender: "Gents", 
       availability: "Available Now", capacity: "Triple" },
   
@@ -96,7 +97,7 @@ const Filter = () => {
         <h3>Filters</h3>
 
         <h4>Gender</h4>
-        {["Gents", "Ladies", "Unisex"].map(gender => (
+        {["Male", "Female", "Unisex"].map(gender => (
           <label key={gender}>
             <input type="checkbox" checked={selectedFilters.gender.includes(gender)} 
                    onChange={() => handleFilterChange("gender", gender)} /> {gender}
@@ -190,7 +191,9 @@ const Filter = () => {
                 <p><strong>Availability:</strong> {pg.availability}</p>
                 <p><strong>Capacity:</strong> {pg.capacity}</p>
                 <p><strong>Gender:</strong> {pg.gender}</p>
-                <button className="details-btn">View PG Details</button>
+                <Link to={`/pg/${pg.id | 1}`}>
+                    <button className="details-btn">View PG Details</button>
+                </Link>
               </div>
             ))
           ) : (
